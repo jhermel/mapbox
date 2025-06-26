@@ -1,0 +1,49 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Kila2/XcodeGen/master/Assets/json-schema/project.json
+name: MapboxMaps
+include:
+  - xcodegen/Examples.yml
+  - xcodegen/MapboxMaps.yml
+  - xcodegen/MapboxMapsTests.yml
+settings:
+  base:
+    MAPBOXMAPS_PATH: .
+options:
+  bundleIdPrefix: com.mapbox
+  defaultConfig: Release
+  xcodeVersion: "15.0"
+  parallelizeBuild: false
+  groupOrdering:
+    - order:
+      - General
+      - Examples
+      - DebugApp
+      - MapboxMaps
+      - MapboxMapsTests
+  minimumXcodeGenVersion: "2.38.0"
+  preGenCommand: scripts/prepare_binary_dependencies.sh
+
+packages:
+  Fingertips:
+    url: https://github.com/mapbox/Fingertips.git
+    from: 0.6.0
+  Hammer:
+    url: https://github.com/lyft/Hammer.git
+    from: 0.14.3
+
+targets:
+  Examples:
+    settings:
+      groups:
+        - turf_library_evolution_settings
+    scheme:
+      testTargets:
+        - MapboxMapsTests
+      gatherCoverageData: true
+      coverageTargets:
+        - MapboxMaps
+
+  MapboxMaps:
+    settings:
+      base:
+        RUN_DOCUMENTATION_COMPILER: YES
+        OTHER_DOCC_FLAGS: "--help" # Disable embedded documentation compiler in favor of custom docc behavior. That should fix missing documentation symbols issue (MAPSIOS-1467).
