@@ -1,0 +1,24 @@
+include:
+  - project-base.yml
+packages:
+  MapboxMaps:
+    path: ../..
+targets:
+  SwiftPackageManagerIntegration:
+    templates:
+      - Application
+    dependencies:
+      - package: MapboxMaps
+  SwiftPackageManagerIntegrationUITest:
+    templates:
+      - UITest
+    dependencies:
+      - target: SwiftPackageManagerIntegration
+  CocoaPodsIntegration:
+    templates:
+      - Application
+  CocoaPodsIntegrationUITest:
+    templates:
+      - UITest
+    dependencies:
+      - target: CocoaPodsIntegration

@@ -1,0 +1,52 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Kila2/XcodeGen/master/Assets/json-schema/project.json
+
+include:
+  - targets.yml
+targets:
+  MapboxMaps:
+    type: framework
+    supportedDestinations: [iOS, visionOS]
+    templates:
+      - maps-dependencies
+    settings:
+      groups:
+        - turf_library_evolution_settings
+      base:
+        INSTALL_PATH: $(LOCAL_LIBRARY_DIR)/Frameworks
+        MACH_O_TYPE: mh_dylib
+        PRODUCT_NAME: $(TARGET_NAME:c99extidentifier)
+        PRODUCT_BUNDLE_IDENTIFIER: com.mapbox.MapboxMaps
+        SKIP_INSTALL: NO
+        DEFINES_MODULE: YES
+        LD_RUNPATH_SEARCH_PATHS: $(inherited) @executable_path/Frameworks @loader_path/Frameworks
+        SWIFT_EMIT_PRIVATE_MODULE_INTERFACE: YES
+        SWIFT_INSTALL_OBJC_HEADER: NO
+        SWIFT_TREAT_WARNINGS_AS_ERRORS: NO
+        CODE_SIGN_STYLE: Automatic
+        STRIP_STYLE: non-global
+        STRIPFLAGS: -rS
+    sources:
+      - path: "../Sources/MapboxMaps/"
+        excludes:
+          - "**/*.plist"
+          - "**/*.h"
+          - "**/.swiftlint.yml"
+      - path: "../Sources/MapboxMaps/MapboxMaps.h"
+      - path: .
+        excludes:
+          - "**/*.xcodeproj"
+          - ../Apps
+          - ../Carthage/Checkouts
+          - ../.build
+        buildPhase: none
+        group: General
+    postCompileScripts:
+      - name: Compile unified documentation
+        showEnvVars: true
+        basedOnDependencyAnalysis: true
+        discoveredDependencyFile: $(DERIVED_FILES_DIR)/MapboxMapsCustomDocumentation.d
+        script: $SRCROOT/$MAPBOXMAPS_PATH/scripts/doc-generation/xcode-rebuild-docc.sh
+        inputFiles:
+          - $(SRCROOT)/$(MAPBOXMAPS_PATH)/Sources/MapboxMaps/Documentation.docc
+        outputFiles:
+          - $(TARGET_TEMP_DIR)/MapboxMaps-fixed-diagnostics.json
